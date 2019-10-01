@@ -14,15 +14,16 @@ private:
 	string mapPath;
 public:
 	GameEngine(string mapPath);
-	void read();
+	void readMap();
+	void printMap();
 };
 
 GameEngine::GameEngine(string mapPath){
 	this->mapPath = mapPath;
-	read();
+	readMap();
 }
 
-void GameEngine::read(){
+void GameEngine::readMap(){
 
 	//read the map txt file into a file stream
 	ifstream mapFile(mapPath);
@@ -57,17 +58,17 @@ void GameEngine::read(){
 		counter++;
 	}
 
-	for(int ii=0; ii<5; ii++){
-		for(int jj=0; jj<5; jj++){
-			cout << map[ii][jj] << endl;
-		}
-	}
-
-
-
-
-
+	printMap();
 
 }
+
+void GameEngine::printMap(){
+	//cout the map (line by line)
+	for(int i=0; i<5; i++){
+		cout << map[i][0] << " "<< map[i][1] << " "<< map[i][2] << " "<<map[i][3] << " "<< map[i][4] << endl;
+	}
+}
+
+
 
 #endif /* GAMEENGINE_H_ */
