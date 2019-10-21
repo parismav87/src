@@ -1,8 +1,8 @@
 /*
  * GameEngine.h
  *
- *  Created on: Oct 1, 2019
- *      Author: Paris
+ *  Created on: 1 okt. 2019
+ *      Author: Luc Wolfs
  */
 
 #ifndef GAMEENGINE_H_
@@ -16,6 +16,8 @@ public:
 	GameEngine(string mapPath);
 	void readMap();
 	void printMap();
+	//char controls(); still experimenting on it
+
 };
 
 GameEngine::GameEngine(string mapPath){
@@ -24,51 +26,77 @@ GameEngine::GameEngine(string mapPath){
 }
 
 void GameEngine::readMap(){
-
-	//read the map txt file into a file stream
 	ifstream mapFile(mapPath);
 
-	// counter for text file lines
 	int counter = 0;
-	//counters for map array
-	int i = 0;
-	int j = 0;
+	int i=0;
+	int j=0;
 
-	//check whether the file was loaded correctly
 	if(mapFile){
-		cout<< "map loaded" << endl;
+		cout<<"map loaded"<<endl;
 	}
 
-	//while there are lines to read
-	while(mapFile){
-		string line; //declare line string
-		getline(mapFile, line); //text line into string
+	//just in case there's no file: create a very basic grid
+	else{
+		for(int i=0;i<5;i++){
+			for(int j=0;j<5;j++){
+			map[i][j]=randint(0, 4);
+			}
+		}
+	}
 
-		//counter>0 to skip the first line of txt file
-		if(counter>0){
-			j=0; //j resets to 0 after each line
-			for(char c: line){ //for each char in string
+	while(mapFile){
+		string line;
+		getline(mapFile, line);
+		if(counter > 0){
+			j=0;
+			for(char c: line){
 				if(c!=','){
-					map[i][j] = atoi(&c); //char into int
+					map[i][j] = atoi(&c);
 					j++;
 				}
 			}
-			i++; //next line
+			i++;
 		}
 		counter++;
 	}
 
+
 	printMap();
+
 
 }
 
 void GameEngine::printMap(){
-	//cout the map (line by line)
-	for(int i=0; i<5; i++){
-		cout << map[i][0] << " "<< map[i][1] << " "<< map[i][2] << " "<<map[i][3] << " "<< map[i][4] << endl;
+	string cursor = "|";//the token on the game board which you're currently at.
+	for(int i=0;i<5;i++){
+		for(int j=0;j<5;j++){
+		if(i==0 and j==0){
+			cout<<cursor<<map[i][j];
+		}
+		else{
+		cout<<" "<<map[i][j];}
+		}
+	cout<<endl;
 	}
 }
 
-
-
+//function for selecting a token on the board. Still in development...
+/*char GameEngine::controls(){
+	char input;
+	cin>>input;
+	if(input=='w'){
+		return input;
+	}
+	if(input=='s'){
+		return input;
+	}
+	if(input=='d'){
+		return input;
+	}
+	if(input=='a'){
+		return input;
+	}
+}*/
 #endif /* GAMEENGINE_H_ */
+
