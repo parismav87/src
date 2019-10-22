@@ -40,23 +40,23 @@ void GameEngine::readMap(){
 	}
 
 	//while there are lines to read
-	while(mapFile){
-		string line; //declare line string
-		getline(mapFile, line); //text line into string
-
-		//counter>0 to skip the first line of txt file
-		if(counter>0){
-			j=0; //j resets to 0 after each line
-			for(char c: line){ //for each char in string
-				if(c!=','){
-					map[i][j] = atoi(&c); //char into int
-					j++;
-				}
-			}
-			i++; //next line
-		}
-		counter++;
-	}
+    while(mapFile){
+        string line; //declare line string
+        getline(mapFile, line); //text line into string
+        
+        //cout << line << endl;
+        
+        j=0; //j resets to 0 after each line
+        for(char c: line){ //for each char in string
+            if(c!=','){
+                map[i][j] = atoi(&c); //char into int
+                j++;
+            }
+        }
+        i++; //next line
+        
+        counter++;
+    }
 
 	printMap();
 
