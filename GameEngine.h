@@ -63,10 +63,17 @@ void GameEngine::readMap(){
 }
 
 void GameEngine::printMap(){
-	//cout the map (line by line)
-	for(int i=0; i<5; i++){
-		cout << map[i][0] << " "<< map[i][1] << " "<< map[i][2] << " "<<map[i][3] << " "<< map[i][4] << endl;
-	}
+    //cout the map (line by line)
+    for(int i=0; i<10; i++){ //ideally this would be mapsize something somwething
+        for(int j=0; j<10; j++){
+            if(j != 9){
+                cout << map[i][j] << " ";
+            } else {
+                cout << map[i][j];
+            }
+        }
+        cout << endl;
+    }
 }
 
 
