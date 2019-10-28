@@ -5,3 +5,5 @@
 -A default map is implemented (just in case there is no file with a description of the grid)
 
 
+(28-10-2019):
+-isLegalMove() and makeMove() are added.
