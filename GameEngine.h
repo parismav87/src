@@ -17,6 +17,12 @@ public:
 	void readMap();
 	void printMap();
 	//char controls(); still experimenting on it
+	void makeMove(int x1, int y1, int x2, int y2);
+	bool isLegalMove(int x1, int y1, int x2, int y2);
+	bool isVerticalLegal(int x1, int y1, int x2, int y2);
+	bool isHorizontalLegal(int x1, int y1, int x2, int y2);
+	bool isSameRow(int x1, int x2);
+	bool isSameColumn(int y1, int y2);
 
 };
 
@@ -81,6 +87,84 @@ void GameEngine::printMap(){
 	}
 }
 
+//makeMove changes two elements on the grid
+void GameEngine::makeMove(int x1, int y1, int x2, int y2){
+	int temp = map[x1][y1];
+	map[x1][y1]= map[x2][y2];
+	map[x2][y2]=temp;
+}
+
+
+bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
+	bool y = isVerticalLegal(x1, y1, x2, y2);
+	bool x = isHorizontalLegal(x1, y1, x2, y2);
+	bool row = isSameRow(x1, x2);
+	bool column = isSameColumn(y1, y2);
+
+	if(y and row){
+		return true;
+	}
+	else if(x and column){
+		return true;
+	}
+	return false;
+
+
+}
+
+
+bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){
+	if(((map[x2][y2]==map[x1][y1-2]) and (map[x2][y2]==map[x1][y1-1]))
+			or ((map[x1][y1]==map[x2][y2-2]) and(map[x1][y1]==map[x2][y2-1]))){
+		return true;
+	}
+	else if(((map[x2][y2]==map[x1][y1+2]) and (map[x2][y2]==map[x1][y1+1]))
+			or ((map[x1][y1]==map[x2][y2+2]) and(map[x1][y1]==map[x2][y2+1]))){
+		return true;
+	}
+	else if(((map[x2][y2]==map[x1][y1-1]) and (map[x2][y2]==map[x1][y1+1]))
+			or ((map[x1][y1]==map[x2][y2-1]) and(map[x1][y1]==map[x2][y2+1]))){
+		return true;
+	}
+	return false;
+}
+
+bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){
+	if(((map[x2][y2]==map[x1-2][y1]) and (map[x2][y2]==map[x1-1][y1]))
+			or ((map[x1][y1]==map[x2-2][y2]) and(map[x1][y1]==map[x2-2][y2]))){
+		return true;
+	}
+	else if(((map[x2][y2]==map[x1+2][y1]) and (map[x2][y2]==map[x1+1][y1]))
+			or ((map[x1][y1]==map[x2+2][y2]) and(map[x1][y1]==map[x2+2][y2]))){
+		return true;
+
+	}
+	else if(((map[x2][y2]==map[x1-1][y1]) and (map[x2][y2]==map[x1+1][y1]))
+			or ((map[x1][y1]==map[x2-1][y2]) and(map[x1][y1]==map[x2][y2]))){
+		return true;
+	}
+	return false;
+}
+
+
+bool GameEngine::isSameRow(int x1, int x2){
+	if(x1==x2){
+		return true;
+	}
+	return false;
+}
+
+bool GameEngine::isSameColumn(int y1, int y2){
+	if(y1==y2){
+		return true;
+	}
+	return false;
+}
+
+
+
+
+
 //function for selecting a token on the board. Still in development...
 /*char GameEngine::controls(){
 	char input;
@@ -99,4 +183,3 @@ void GameEngine::printMap(){
 	}
 }*/
 #endif /* GAMEENGINE_H_ */
-
