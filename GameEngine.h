@@ -18,7 +18,7 @@ public:
     bool isHorizontalLegal(int x1, int y1, int x2, int y2);
     bool isSameRow(int x1, int x2);
     bool isSameColumn(int y1, int y2);
-    
+
 };
 
 GameEngine::GameEngine(string mapPath){
@@ -28,30 +28,29 @@ GameEngine::GameEngine(string mapPath){
 
 void GameEngine::readMap(){
     ifstream mapFile(mapPath);
-    
+
     int counter = 0;
     int i=0;
     int j=0;
-    
     if(mapFile){
         cout<<"map loaded"<<endl;
     }
-    
-    //just in case there's no file: create a very basic grid
+
+    /*just in case there's no file: create a very basic grid
     else{
         for(int i=0;i<10;i++){
             for(int j=0;j<10;j++){
                 map[i][j]=randint(0, 4);
             }
         }
-    }
-    
-    
-    
+    }*/
+
+
+
     while(mapFile){
         string line;
         getline(mapFile, line);
-        
+
         j=0; //j resets to 0 after each line
         for(char c: line){ //for each char in string
             if(c!=','){
@@ -60,22 +59,22 @@ void GameEngine::readMap(){
             }
         }
         i++; //next line
-        
+
         counter++;
     }
-    
+
     printMap();
-    
+
 }
 
 void GameEngine::printMap(){
     //string cursor = "|";//the token on the game board which you're currently at.
-    //int height = ((sizeof map) / (sizeof *map));
-    //int width = ((sizeof map) / (sizeof *map));
+    int height = sizeof (map) / sizeof (*map);
+    int width = sizeof (*map) / sizeof (int);
     //cout << height << width << endl;
-    
-    for(int i=0; i<10; i++){ //ideally this would be mapsize something somwething
-        for(int j=0; j<10; j++){
+
+    for(int i=0; i<height; i++){ //ideally this would be mapsize something somwething
+        for(int j=0; j<width; j++){
             /*if(i==0 and j==0){
              cout<<cursor<<map[i][j];
              }*/
@@ -96,17 +95,21 @@ void GameEngine::makeMove(int x1, int y1, int x2, int y2){
 
 
 bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
-	if((isVerticalLegal(x1, y1, x2, y2) or isHorizontalLegal(x1, y1, x2, y2)) and isAdjecent(x1,x2,y1,y2)){
+	if(isVerticalLegal(x1, y1, x2, y2) or isHorizontalLegal(x1, y1, x2, y2)){
+			if (isAdjecent(x1,x2,y1,y2)){
 		return true;
+		}
 	}
+	else cout << "No valid move made";
+
 	return false;
 }
 
 bool GameEngine::isAdjecent(int x1, int y1, int x2, int y2){
 if (!((x1 == x2 && abs(y1-y2) == 1) || (y1 == y2 && abs(x1-x2) == 1))){
 	std::cout << "Non-Adjecent move, try again" << std::endl;
-	return true;}
-	else return false;}
+	return false;}
+	else return true;}
 
 bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
 	if(((map[x2][y2]==map[x1][y1-2]) and (map[x2][y2]==map[x1][y1-1]))
