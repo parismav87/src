@@ -129,7 +129,7 @@ bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check bef
 	return false;
 }
 
-void GameEngine::gameLoop(){
+void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
 	int x1, y1, x2, y2;
 
 	while(true){
