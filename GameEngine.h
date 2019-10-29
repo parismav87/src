@@ -36,17 +36,6 @@ void GameEngine::readMap(){
         cout<<"map loaded"<<endl;
     }
 
-    /*just in case there's no file: create a very basic grid
-    else{
-        for(int i=0;i<10;i++){
-            for(int j=0;j<10;j++){
-                map[i][j]=randint(0, 4);
-            }
-        }
-    }*/
-
-
-
     while(mapFile){
         string line;
         getline(mapFile, line);
@@ -68,16 +57,12 @@ void GameEngine::readMap(){
 }
 
 void GameEngine::printMap(){
-    //string cursor = "|";//the token on the game board which you're currently at.
     int height = sizeof (map) / sizeof (*map);
     int width = sizeof (*map) / sizeof (int);
     //cout << height << width << endl;
 
-    for(int i=0; i<height; i++){ //ideally this would be mapsize something somwething
+    for(int i=height; i>-1; i--){ //ideally this would be mapsize something somwething
         for(int j=0; j<width; j++){
-            /*if(i==0 and j==0){
-             cout<<cursor<<map[i][j];
-             }*/
             if(j != 9){
                 cout << map[i][j] << " ";
             } else {
@@ -145,23 +130,4 @@ bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check bef
 	return false;
 }
 
-
-
-//function for selecting a token on the board. Still in development...
-/*char GameEngine::controls(){
- char input;
- cin>>input;
- if(input=='w'){
- return input;
- }
- if(input=='s'){
- return input;
- }
- if(input=='d'){
- return input;
- }
- if(input=='a'){
- return input;
- }
- }*/
 #endif /* GAMEENGINE_H_ */
