@@ -5,7 +5,7 @@
 
 int main()
 {
-	GameEngine engine("C:\\Users\\itsupport\\Desktop\\map.txt");
+	GameEngine engine("C:\\Users\\itsupport\\Desktop\\map.txt", "C:\\Users\\itsupport\\Desktop\\future10.txt",);
 	keep_window_open();
 	return 0;
 }
