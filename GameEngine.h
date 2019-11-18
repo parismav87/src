@@ -5,13 +5,14 @@
 class GameEngine{
 private:
     int map[10][10];
+    int fmap[10][10];
     string mapPath;
     string futurePath;
 public:
     GameEngine(string mapPath, string futurePath);
-    void readMap(string mapPath); //+int* ar as parameter when implementing future map
+    void readMap(string mapPath);
     void printMap();
-    void readFuture();
+    void readFuture(string futurePath);
 
     void makeMove(int x1, int y1, int x2, int y2);
     bool isLegalMove(int x1, int y1, int x2, int y2);
@@ -22,18 +23,20 @@ public:
     bool isSameColumn(int y1, int y2);
     bool hasLegalMoves();
     void gameLoop();
+    void updateMap();
+    void breakThree();
 
 };
 
 GameEngine::GameEngine(string mapPath, string futurePath){
     this->mapPath = mapPath;
     this->futurePath = futurePath;
-    //readMap(mapPath, map);
     readMap(mapPath);
+    readFuture(futurePath);
 
 }
 
-void GameEngine::readMap(string mapPath){//+int* ar as parameters when implementing future map
+void GameEngine::readMap(string mapPath){
     ifstream mapFile(mapPath);
     int counter = 0;
     int i=0;
@@ -61,6 +64,32 @@ void GameEngine::readMap(string mapPath){//+int* ar as parameters when implement
     printMap();
     gameLoop();
 
+}
+
+void GameEngine::readFuture(string futurePath){
+    ifstream mapFile(mapPath);
+    int counter = 0;
+    int i=0;
+    int j=0;
+    if(mapFile){
+        cout<<"map future loaded"<<endl;
+    }
+
+    while(mapFile){
+        string line;
+        getline(mapFile, line);
+
+        j=0; //j resets to 0 after each line
+        for(char c: line){ //for each char in string
+            if(c!=','){
+                fmap[i][j] = atoi(&c); //char into int
+                j++;
+            }
+        }
+        i++; //next line
+
+        counter++;
+    }
 }
 
 void GameEngine::printMap(){
@@ -143,9 +172,9 @@ bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check bef
 }
 
 bool GameEngine::hasLegalMoves(){
-	for(int x1=0; x1<9; x1++){
-		for(int y1=0; y1<9; y1++){
-			if(isLegalMove(x1, y1, x1+1, y1) || isLegalMove(x1, y1, x1, y1+1)){
+	for(int x=0; x<9; x++){
+		for(int y=0; y<9; y++){
+			if(isLegalMove(x, y, x+1, y) || isLegalMove(x, y, x, y+1)){
 				//cout<<"found legal move"<<x1<<y1<<endl;
 				return true;
 			}
@@ -153,6 +182,33 @@ bool GameEngine::hasLegalMoves(){
 	}
 	cout<<"no legal move found"<<endl;
 	return false;
+}
+
+void GameEngine::updateMap(){
+
+}
+
+void GameEngine::breakThree(){
+	for(int x=0; x<10; x++){
+			for(int y=0; y<10; y++){
+					if(map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2] && y<8){
+						while(x>0){
+							map[x][y]=map[x-1][y];
+							map[x][y+1]=map[x-1][y+1];
+							map[x][y+2]=map[x-1][y+2];
+							x--;
+						}
+						}
+					if(map[x][y]==map[x+1][y] && map[x][y]==map[x+2][y] && x<8){
+						while(x>2){
+							map[x][y]=map[x-3][y];
+							map[x+1][y]=map[x-2][y];
+							map[x+2][y]=map[x-1][y];
+							x--;
+						}
+				}
+	}
+}
 }
 
 void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
@@ -170,6 +226,7 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 		cin>>y2;
 		if(isLegalMove(x1, y1, x2, y2)){
 			makeMove(x1, y1, x2, y2);
+			breakThree();
 		}
 		else{
 			cout<<"Invalid move"<<endl;
@@ -179,9 +236,7 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 	}
 }
 /* TO DO:
- * -Reading future list
  * -updateMap()
- * 	-breaking a row of three
- *  	-tiles falling down
+ *  	-tiles falling down from the future map
  */
 #endif /* GAMEENGINE_H_ */
