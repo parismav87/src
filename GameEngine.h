@@ -270,9 +270,12 @@ void GameEngine::breakHorizontal(int x1, int y1){
 
 void GameEngine::breakStuff(int x, int y){
 	breakHorizontal(x, y);
+	//nothing should happen in between here. breaks happen "simultaneously" (in the same game loop iteration)
 	breakVertical(x, y);
 	//i'm not sure how to handle this, so i did horizontal first and then vertical.
 	//if after 1 move there is more than one groups of tiles to be broken, they should happen in the same iteration of gameloop...
+
+	//at this point in the code, we have a map with a bunch of zeros. we should update those.
 }
 
 
