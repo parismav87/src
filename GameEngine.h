@@ -26,6 +26,9 @@ public:
     void updateMap(int count);
     void breakThree();
     bool needsUpdate();
+    void breakStuff(int x, int y);
+    void breakHorizontal(int x, int y);
+    void breakVertical(int x, int y);
 
 };
 
@@ -207,6 +210,71 @@ void GameEngine::updateMap(int count){
 	}
 
 }
+
+void GameEngine::breakVertical(int x1, int y1){
+	int x2=x1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
+	while(map[x2][y1] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
+		x2+=1; //update the "next" tile
+		if(x2>9){
+			count+=1;
+			break; //should stop if we reached the end of the map
+		}
+		count+=1; //increase number of tiles that are equal
+	}
+	if(count>=3){ //if it found 3 or more matching tiles in a row
+		for(int x=x1; x<=x2; x++){
+			map[x][y1] = 0; //dunno what this should be (0?)
+		}
+	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
+		if(x2<8 && y1<9){
+			breakVertical(x2,y1);
+		} else if (x2>=8 && y1<9){
+			breakVertical(0,y1+1); //this column is finished, go to the next
+		} else {
+			break; //do nothing, y1 is 9, our job is done.
+		}
+
+
+		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
+	}
+}
+
+void GameEngine::breakHorizontal(int x1, int y1){
+	int y2=y1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
+	while(map[x1][y2] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
+		y2+=1; //update the "next" tile
+		if(y2>9){
+			count+=1;
+			break; //should stop if we reached the end of the map
+		}
+		count+=1; //increase number of tiles that are equal
+	}
+	if(count>=3){ //if it found 3 or more matching tiles in a row
+		for(int y=y1; y<=y2; y++){
+			map[x1][y] = 0; //dunno what this should be (0?)
+		}
+	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
+		if(y2<8 && x1<9){ //if there is still room, horizontally and vertically
+			breakHorizontal(x1,y2);
+		} else if (y2>=8 && x1<9){ //if there is no room horizontally
+			breakHorizontal(x1+1,0); //this row is finished, go to the next
+		} else {
+			break; //do nothing, x1 is 9, our job is done.
+		}
+
+
+		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
+	}
+}
+
+
+void GameEngine::breakStuff(int x, int y){
+	breakHorizontal(x, y);
+	breakVertical(x, y);
+	//i'm not sure how to handle this, so i did horizontal first and then vertical.
+	//if after 1 move there is more than one groups of tiles to be broken, they should happen in the same iteration of gameloop...
+}
+
 
 void GameEngine::breakThree(){
 	for(int x=0; x<10; x++){
