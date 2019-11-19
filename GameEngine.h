@@ -23,8 +23,9 @@ public:
     bool isSameColumn(int y1, int y2);
     bool hasLegalMoves();
     void gameLoop();
-    void updateMap();
+    void updateMap(int count);
     void breakThree();
+    bool needsUpdate();
 
 };
 
@@ -109,6 +110,19 @@ void GameEngine::printMap(){
     }
 }
 
+
+bool GameEngine::needsUpdate(){
+	for(int x=0; x<8; x++){
+		for(int y=0; y<8; y++){
+			if((map[x][y]==map[x+1][y] && map[x][y] == map[x+2][y]) || (map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2])){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
 //makeMove changes two elements on the grid
 void GameEngine::makeMove(int x1, int y1, int x2, int y2){
 	swap(map[x1][y1],map[x2][y2]);
@@ -184,7 +198,13 @@ bool GameEngine::hasLegalMoves(){
 	return false;
 }
 
-void GameEngine::updateMap(){
+void GameEngine::updateMap(int count){
+	//do the update (break 3,4 or 5)
+	//update the score
+	//score += numberOfTiles*count
+	while(needsUpdate()){
+		updateMap(count+1);
+	}
 
 }
 
