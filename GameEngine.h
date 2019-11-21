@@ -1,4 +1,3 @@
-
 #ifndef GAMEENGINE_H_
 #define GAMEENGINE_H_
 
@@ -6,12 +5,15 @@ class GameEngine{
 private:
     int map[10][10];
     int fmap[10][10];
+    int mapCopy[10][10];
+    int totalScore=0;
     string mapPath;
     string futurePath;
 public:
     GameEngine(string mapPath, string futurePath);
     void readMap(string mapPath);
     void printMap();
+    void printMapCopy();
     void readFuture(string futurePath);
 
     void makeMove(int x1, int y1, int x2, int y2);
@@ -29,6 +31,9 @@ public:
     void breakStuff(int x, int y);
     void breakHorizontal(int x, int y);
     void breakVertical(int x, int y);
+    void restoreMap();
+    void updateZeros();
+    int getScore();
 
 };
 
@@ -111,17 +116,35 @@ void GameEngine::printMap(){
         }
         cout << endl;
     }
+    cout<<endl;
 }
 
+void GameEngine::printMapCopy(){
+    int height = sizeof (map) / sizeof (*map);
+    int width = sizeof (*map) / sizeof (int);
+    //cout << height << width << endl;
+
+    for(int i=0; i<height; i++){ //ideally this would be mapsize something somwething
+        for(int j=0; j<width; j++){
+            if(j != 9){
+                cout << mapCopy[i][j] << " ";
+            } else {
+                cout << mapCopy[i][j];
+            }
+        }
+        cout << endl;
+    }
+}
 
 bool GameEngine::needsUpdate(){
-	for(int x=0; x<8; x++){
-		for(int y=0; y<8; y++){
-			if((map[x][y]==map[x+1][y] && map[x][y] == map[x+2][y]) || (map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2])){
+	for(int x=0; x<10; x++){
+		for(int y=0; y<10; y++){
+			if((x<8 && map[x][y]==map[x+1][y] && map[x][y] == map[x+2][y] && map[x][y]!=0) || (y<8 && map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2] && map[x][y]!=0)){
 				return true;
 			}
 		}
 	}
+//	cout<<"I don't need update"<<endl;
 	return false;
 }
 
@@ -202,12 +225,16 @@ bool GameEngine::hasLegalMoves(){
 }
 
 void GameEngine::updateMap(int count){
-	//do the update (break 3,4 or 5)
+	for(int x=0; x<10; x++){
+		for(int y=0; y<10; y++){
+			mapCopy[x][y]=map[x][y];
+		}
+	}
+	breakStuff(0, 0);
+	updateZeros();
 	//update the score
 	//score += numberOfTiles*count
-	while(needsUpdate()){
-		updateMap(count+1);
-	}
+
 
 }
 
@@ -222,15 +249,16 @@ void GameEngine::breakVertical(int x1, int y1){
 		count+=1; //increase number of tiles that are equal
 	}
 	if(count>=3){ //if it found 3 or more matching tiles in a row
-		for(int x=x1; x<=x2; x++){
-			map[x][y1] = 0; //dunno what this should be (0?)
+		for(int x=x1; x<=x2-1; x++){
+			mapCopy[x][y1] = 0; //dunno what this should be (0?)
 		}
-	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
+	}
+//	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
 		if(x2<8 && y1<9){
 			breakVertical(x2,y1);
 		} else if (x2>=8 && y1<9){
 			breakVertical(0,y1+1); //this column is finished, go to the next
-		}
+//		}
 
 //		else {
 //			break; //do nothing, y1 is 9, our job is done.
@@ -252,15 +280,16 @@ void GameEngine::breakHorizontal(int x1, int y1){
 		count+=1; //increase number of tiles that are equal
 	}
 	if(count>=3){ //if it found 3 or more matching tiles in a row
-		for(int y=y1; y<=y2; y++){
-			map[x1][y] = 0; //dunno what this should be (0?)
+		for(int y=y1; y<=y2-1; y++){
+			mapCopy[x1][y] = 0; //dunno what this should be (0?)
 		}
-	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
-		if(y2<8 && x1<9){ //if there is still room, horizontally and vertically
-			breakHorizontal(x1,y2);
-		} else if (y2>=8 && x1<9){ //if there is no room horizontally
-			breakHorizontal(x1+1,0); //this row is finished, go to the next
-		}
+	}
+//	else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
+	if(y2<8 && x1<9){ //if there is still room, horizontally and vertically
+		breakHorizontal(x1,y2);
+	} else if (y2>=8 && x1<9){ //if there is no room horizontally
+		breakHorizontal(x1+1,0); //this row is finished, go to the next
+//		}
 
 //		else {
 //			break; //do nothing, x1 is 9, our job is done.
@@ -274,20 +303,16 @@ void GameEngine::breakHorizontal(int x1, int y1){
 
 void GameEngine::breakStuff(int x, int y){
 	breakHorizontal(x, y);
+//	cout<<endl;
+//	printMap();
+	cout<<endl;
 	//nothing should happen in between here. breaks happen "simultaneously" (in the same game loop iteration)
 	breakVertical(x, y);
+//	printMap();
+//	cout<<endl;
 	//i'm not sure how to handle this, so i did horizontal first and then vertical.
 	//if after 1 move there is more than one groups of tiles to be broken, they should happen in the same iteration of gameloop...
-	for(x=9; x>0;x--){
-		for(y=9;y>-1;y--){
-			int x2 = x;
-			while(map[x][y]==0 && x2>0){
-				map[x][y]=map[x2-1][y];
-				map[x2-1][y]=0;
-				x2--;
-			}
-		}
-	}
+
 	//at this point in the code, we have a map with a bunch of zeros. we should update those.
 }
 
@@ -314,6 +339,30 @@ void GameEngine::breakStuff(int x, int y){
 	}
 }
 }*/
+void GameEngine::restoreMap(){
+	 for(int i=0; i<10; i++){ //ideally this would be mapsize something somwething
+	        for(int j=0; j<10; j++){
+	        	map[i][j]=mapCopy[i][j];
+	        }
+	 }
+}
+
+void GameEngine::updateZeros(){
+	for(int x=9; x>0;x--){
+		for(int y=9;y>-1;y--){
+			int x2 = x;
+			while(mapCopy[x][y]==0 && x2>0){
+				mapCopy[x][y]=mapCopy[x2-1][y];
+				mapCopy[x2-1][y]=0;
+				x2--;
+			}
+		}
+	}
+}
+
+int GameEngine::getScore(){
+	return totalScore;
+}
 
 void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
 	int x1, y1, x2, y2;
@@ -329,19 +378,33 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 		cout<<"Give the y-coordinate of the second tile"<<endl;
 		cin>>y2;
 		if(isLegalMove(x1, y1, x2, y2)){
+			int points=1;
 			makeMove(x1, y1, x2, y2);
+			printMap();
+			cout<<endl;
+			while(needsUpdate()){
+				cout<<"I need an update"<<endl;
+				updateMap(points);
+				restoreMap();
+				printMap();
+
+				points+=1;
+			}
 			//breakThree();
+			cout<<points<<endl;
 		}
 		else{
-			cout<<"Invalid move"<<endl;
-			break;
+			cout<<"Invalid move, try again"<<endl;
 		}
-		printMap();
+
 	}
+	cout<<"The game has ended"<<endl;
+	cout<<getScore()<<endl;
 }
 /* TO DO:
  * -updateMap()
  *  	-tiles falling down from the future map
  *  	-scorekeeping
+ *  	-if no legal moves anymore-->then break
  */
 #endif /* GAMEENGINE_H_ */
