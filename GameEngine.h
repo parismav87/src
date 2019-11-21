@@ -230,9 +230,11 @@ void GameEngine::breakVertical(int x1, int y1){
 			breakVertical(x2,y1);
 		} else if (x2>=8 && y1<9){
 			breakVertical(0,y1+1); //this column is finished, go to the next
-		} else {
-			break; //do nothing, y1 is 9, our job is done.
 		}
+
+//		else {
+//			break; //do nothing, y1 is 9, our job is done.
+//		}
 
 
 		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
@@ -258,9 +260,11 @@ void GameEngine::breakHorizontal(int x1, int y1){
 			breakHorizontal(x1,y2);
 		} else if (y2>=8 && x1<9){ //if there is no room horizontally
 			breakHorizontal(x1+1,0); //this row is finished, go to the next
-		} else {
-			break; //do nothing, x1 is 9, our job is done.
 		}
+
+//		else {
+//			break; //do nothing, x1 is 9, our job is done.
+//		}
 
 
 		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
