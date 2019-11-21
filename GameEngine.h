@@ -24,7 +24,7 @@ public:
     bool hasLegalMoves();
     void gameLoop();
     void updateMap(int count);
-    void breakThree();
+    //void breakThree();
     bool needsUpdate();
     void breakStuff(int x, int y);
     void breakHorizontal(int x, int y);
@@ -274,12 +274,21 @@ void GameEngine::breakStuff(int x, int y){
 	breakVertical(x, y);
 	//i'm not sure how to handle this, so i did horizontal first and then vertical.
 	//if after 1 move there is more than one groups of tiles to be broken, they should happen in the same iteration of gameloop...
-
+	for(x=9; x>0;x--){
+		for(y=9;y>-1;y--){
+			int x2 = x;
+			while(map[x][y]==0 && x2>0){
+				map[x][y]=map[x2-1][y];
+				map[x2-1][y]=0;
+				x2--;
+			}
+		}
+	}
 	//at this point in the code, we have a map with a bunch of zeros. we should update those.
 }
 
 
-void GameEngine::breakThree(){
+/*void GameEngine::breakThree(){
 	for(int x=0; x<10; x++){
 			for(int y=0; y<10; y++){
 					if(map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2] && y<8){
@@ -300,7 +309,7 @@ void GameEngine::breakThree(){
 				}
 	}
 }
-}
+}*/
 
 void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
 	int x1, y1, x2, y2;
@@ -317,7 +326,7 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 		cin>>y2;
 		if(isLegalMove(x1, y1, x2, y2)){
 			makeMove(x1, y1, x2, y2);
-			breakThree();
+			//breakThree();
 		}
 		else{
 			cout<<"Invalid move"<<endl;
@@ -329,5 +338,6 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 /* TO DO:
  * -updateMap()
  *  	-tiles falling down from the future map
+ *  	-scorekeeping
  */
 #endif /* GAMEENGINE_H_ */
