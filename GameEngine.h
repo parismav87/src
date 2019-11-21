@@ -28,14 +28,18 @@ public:
     void updateMap(int count);
     //void breakThree();
     bool needsUpdate();
-    void breakStuff(int x, int y);
-    void breakHorizontal(int x, int y);
-    void breakVertical(int x, int y);
+    void breakStuff(int x, int y, int points);
+    void breakHorizontal(int x, int y, int points);
+    void breakVertical(int x, int y, int points);
     void restoreMap();
     void updateZeros();
     int getScore();
+    void addScore(int points);
+    void printScore();
 
 };
+
+
 
 GameEngine::GameEngine(string mapPath, string futurePath){
     this->mapPath = mapPath;
@@ -43,6 +47,13 @@ GameEngine::GameEngine(string mapPath, string futurePath){
     readMap(mapPath);
     readFuture(futurePath);
 
+}
+
+
+void GameEngine::printScore(){
+	cout<< "------------"<< endl;
+	cout<<"Total Score: "<<getScore()<<endl;
+	cout<<endl;
 }
 
 void GameEngine::readMap(string mapPath){
@@ -230,7 +241,7 @@ void GameEngine::updateMap(int count){
 			mapCopy[x][y]=map[x][y];
 		}
 	}
-	breakStuff(0, 0);
+	breakStuff(0, 0, count);
 	updateZeros();
 	//update the score
 	//score += numberOfTiles*count
@@ -238,7 +249,7 @@ void GameEngine::updateMap(int count){
 
 }
 
-void GameEngine::breakVertical(int x1, int y1){
+void GameEngine::breakVertical(int x1, int y1, int points){
 	int x2=x1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
 	while(map[x2][y1] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
 		x2+=1; //update the "next" tile
@@ -251,13 +262,14 @@ void GameEngine::breakVertical(int x1, int y1){
 	if(count>=3){ //if it found 3 or more matching tiles in a row
 		for(int x=x1; x<=x2-1; x++){
 			mapCopy[x][y1] = 0; //dunno what this should be (0?)
+			addScore(points); //add points for each broken tile
 		}
 	}
 //	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
 		if(x2<8 && y1<9){
-			breakVertical(x2,y1);
+			breakVertical(x2,y1, points);
 		} else if (x2>=8 && y1<9){
-			breakVertical(0,y1+1); //this column is finished, go to the next
+			breakVertical(0,y1+1, points); //this column is finished, go to the next
 //		}
 
 //		else {
@@ -269,7 +281,7 @@ void GameEngine::breakVertical(int x1, int y1){
 	}
 }
 
-void GameEngine::breakHorizontal(int x1, int y1){
+void GameEngine::breakHorizontal(int x1, int y1, int points){
 	int y2=y1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
 	while(map[x1][y2] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
 		y2+=1; //update the "next" tile
@@ -282,13 +294,14 @@ void GameEngine::breakHorizontal(int x1, int y1){
 	if(count>=3){ //if it found 3 or more matching tiles in a row
 		for(int y=y1; y<=y2-1; y++){
 			mapCopy[x1][y] = 0; //dunno what this should be (0?)
+			addScore(points);//add points for each broken tile
 		}
 	}
 //	else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
 	if(y2<8 && x1<9){ //if there is still room, horizontally and vertically
-		breakHorizontal(x1,y2);
+		breakHorizontal(x1,y2, points);
 	} else if (y2>=8 && x1<9){ //if there is no room horizontally
-		breakHorizontal(x1+1,0); //this row is finished, go to the next
+		breakHorizontal(x1+1,0, points); //this row is finished, go to the next
 //		}
 
 //		else {
@@ -301,13 +314,13 @@ void GameEngine::breakHorizontal(int x1, int y1){
 }
 
 
-void GameEngine::breakStuff(int x, int y){
-	breakHorizontal(x, y);
+void GameEngine::breakStuff(int x, int y, int points){
+	breakHorizontal(x, y, points);
 //	cout<<endl;
 //	printMap();
 	cout<<endl;
 	//nothing should happen in between here. breaks happen "simultaneously" (in the same game loop iteration)
-	breakVertical(x, y);
+	breakVertical(x, y, points);
 //	printMap();
 //	cout<<endl;
 	//i'm not sure how to handle this, so i did horizontal first and then vertical.
@@ -364,6 +377,10 @@ int GameEngine::getScore(){
 	return totalScore;
 }
 
+void GameEngine::addScore(int points){
+	totalScore+=points;
+}
+
 void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
 	int x1, y1, x2, y2;
 
@@ -387,6 +404,7 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 				updateMap(points);
 				restoreMap();
 				printMap();
+				printScore();
 
 				points+=1;
 			}
