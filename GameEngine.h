@@ -167,6 +167,7 @@ void GameEngine::makeMove(int x1, int y1, int x2, int y2){
 
 
 bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
+	cout<<map[x1][y1]<<"  "<<map[x2][y2]<<endl;
 	if(isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)){
 			if (isAdjecent(x1,y1, x2, y2)){
 		return true;
@@ -183,13 +184,13 @@ if (!((x1 == x2 && abs(y1-y2) == 1) || (y1 == y2 && abs(x1-x2) == 1))){
 	else return true;}
 
 bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
-	if(((map[x2][y2]==map[x1][y1-2]) && (map[x2][y2]==map[x1][y1-1]) && y1>1 && y2>y1)
-			|| ((map[x1][y1]==map[x2][y2-2]) && (map[x1][y1]==map[x2][y2-1]) && y2>1 && y1>y2)){
+	if(((map[x2][y2]==map[x1][y1-2]) && (map[x2][y2]==map[x1][y1-1]) && y1>1 && y2>=y1)
+			|| ((map[x1][y1]==map[x2][y2-2]) && (map[x1][y1]==map[x2][y2-1]) && y2>1 && y1>=y2)){
 		//cout<<"1"<<endl;
 		return true;
 	}
-	else if(((map[x2][y2]==map[x1][y1+2]) && (map[x2][y2]==map[x1][y1+1]) && y1<8 && y1>y2)
-			|| ((map[x1][y1]==map[x2][y2+2]) && (map[x1][y1]==map[x2][y2+1]) && y2<8 && y2>y1)){
+	else if(((map[x2][y2]==map[x1][y1+2]) && (map[x2][y2]==map[x1][y1+1]) && y1<8 && y1>=y2)
+			|| ((map[x1][y1]==map[x2][y2+2]) && (map[x1][y1]==map[x2][y2+1]) && y2<8 && y2>=y1)){
 		//cout<<"2"<<endl;
 		return true;
 	}
@@ -202,14 +203,14 @@ bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check befor
 }
 
 bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
-	if(((map[x2][y2]==map[x1-2][y1]) && (map[x2][y2]==map[x1-1][y1]) && x1>1 && x2>x1)
-			|| ((map[x1][y1]==map[x2-2][y2]) && (map[x1][y1]==map[x2-1][y2]) && x2>1 && x1>x2)){
+	if(((map[x2][y2]==map[x1-2][y1]) && (map[x2][y2]==map[x1-1][y1]) && x1>1 && x2>=x1)
+			|| ((map[x1][y1]==map[x2-2][y2]) && (map[x1][y1]==map[x2-1][y2]) && x2>1 && x1>=x2)){
 		//cout<<"4"<<endl;
 		return true;
 	}
 
-	else if(((map[x2][y2]==map[x1+2][y1]) && (map[x2][y2]==map[x1+1][y1]) && x1<8 && x1>x2)
-			|| ((map[x1][y1]==map[x2+2][y2]) && (map[x1][y1]==map[x2+1][y2]) && x2<8 && x2>x1)){
+	else if(((map[x2][y2]==map[x1+2][y1]) && (map[x2][y2]==map[x1+1][y1]) && x1<8 && x1>=x2)
+			|| ((map[x1][y1]==map[x2+2][y2]) && (map[x1][y1]==map[x2+1][y2]) && x2<8 && x2>=x1)){
 		//cout<<"5"<<endl;
 		return true;
 	}
