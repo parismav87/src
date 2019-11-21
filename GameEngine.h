@@ -251,7 +251,7 @@ void GameEngine::updateMap(int count){
 
 void GameEngine::breakVertical(int x1, int y1, int points){
 	int x2=x1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
-	while(map[x2][y1] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
+	while(map[x2][y1]!=0 && map[x2][y1] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
 		x2+=1; //update the "next" tile
 		if(x2>9){
 			count+=1;
@@ -260,30 +260,22 @@ void GameEngine::breakVertical(int x1, int y1, int points){
 		count+=1; //increase number of tiles that are equal
 	}
 	if(count>=3){ //if it found 3 or more matching tiles in a row
+		cout<<"count "<<count<<endl;
 		for(int x=x1; x<=x2-1; x++){
 			mapCopy[x][y1] = 0; //dunno what this should be (0?)
 			addScore(points); //add points for each broken tile
 		}
 	}
-//	} else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
-		if(x2<8 && y1<9){
-			breakVertical(x2,y1, points);
-		} else if (x2>=8 && y1<9){
-			breakVertical(0,y1+1, points); //this column is finished, go to the next
-//		}
-
-//		else {
-//			break; //do nothing, y1 is 9, our job is done.
-//		}
-
-
-		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
+	if(x2<8 && y1<=9){
+		breakVertical(x2,y1, points);
+	} else if (x2>=8 && y1<9){
+		breakVertical(0,y1+1, points); //this column is finished, go to the next
 	}
 }
 
 void GameEngine::breakHorizontal(int x1, int y1, int points){
 	int y2=y1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
-	while(map[x1][y2] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
+	while(map[x1][y2]!=0 && map[x1][y2] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
 		y2+=1; //update the "next" tile
 		if(y2>9){
 			count+=1;
@@ -295,30 +287,19 @@ void GameEngine::breakHorizontal(int x1, int y1, int points){
 		for(int y=y1; y<=y2-1; y++){
 			mapCopy[x1][y] = 0; //dunno what this should be (0?)
 			addScore(points);//add points for each broken tile
+			cout<<"added "<<points<<endl;
 		}
 	}
-//	else{ //if it didnt find enough tiles, search starting from x2,y1 (the first non-equal tile)
-	if(y2<8 && x1<9){ //if there is still room, horizontally and vertically
+	if(y2<8 && x1<=9){ //if there is still room, horizontally and vertically
 		breakHorizontal(x1,y2, points);
 	} else if (y2>=8 && x1<9){ //if there is no room horizontally
 		breakHorizontal(x1+1,0, points); //this row is finished, go to the next
-//		}
-
-//		else {
-//			break; //do nothing, x1 is 9, our job is done.
-//		}
-
-
-		// STILL NEED TO ADD FUNCTIONALITY TO DROP TILES FROM FUTURE MAP (I THINK THAT EXISTS ALREADY?)
 	}
 }
 
 
 void GameEngine::breakStuff(int x, int y, int points){
 	breakHorizontal(x, y, points);
-//	cout<<endl;
-//	printMap();
-	cout<<endl;
 	//nothing should happen in between here. breaks happen "simultaneously" (in the same game loop iteration)
 	breakVertical(x, y, points);
 //	printMap();
@@ -409,7 +390,7 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 				points+=1;
 			}
 			//breakThree();
-			cout<<points<<endl;
+//			cout<<points<<endl;
 		}
 		else{
 			cout<<"Invalid move, try again"<<endl;

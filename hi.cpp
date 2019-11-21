@@ -5,8 +5,8 @@
 
 int main()
 {
-	GameEngine engine("C:\\Users\\itsupport\\Desktop\\map10.txt", "C:\\Users\\itsupport\\Desktop\\future10.txt");
-	keep_window_open();
+	GameEngine engine("C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\map10.txt", "C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\future10.txt");
+//	keep_window_open();
 	return 0;
 }
 
