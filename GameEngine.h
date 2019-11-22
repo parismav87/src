@@ -33,6 +33,7 @@ public:
     void breakVertical(int x, int y, int points);
     void restoreMap();
     void updateZeros();
+    void replaceZeros();
     int getScore();
     void addScore(int points);
     void printScore();
@@ -45,8 +46,6 @@ GameEngine::GameEngine(string mapPath, string futurePath){
     this->mapPath = mapPath;
     this->futurePath = futurePath;
     readMap(mapPath);
-    readFuture(futurePath);
-
 }
 
 
@@ -81,6 +80,7 @@ void GameEngine::readMap(string mapPath){
         counter++;
     }
 
+    readFuture(futurePath);
     printMap();
     gameLoop();
 
@@ -167,8 +167,8 @@ void GameEngine::makeMove(int x1, int y1, int x2, int y2){
 
 
 bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
-	cout<<map[x1][y1]<<"  "<<map[x2][y2]<<endl;
-	if(isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)){
+//	cout<<map[x1][y1]<<"  "<<map[x2][y2]<<endl;
+	if((isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)) && (map[x1][y1]!=0 || map[x2][y2]!=0)){
 			if (isAdjecent(x1,y1, x2, y2)){
 		return true;
 		}
@@ -244,6 +244,7 @@ void GameEngine::updateMap(int count){
 	}
 	breakStuff(0, 0, count);
 	updateZeros();
+	replaceZeros();
 	//update the score
 	//score += numberOfTiles*count
 
@@ -261,7 +262,7 @@ void GameEngine::breakVertical(int x1, int y1, int points){
 		count+=1; //increase number of tiles that are equal
 	}
 	if(count>=3){ //if it found 3 or more matching tiles in a row
-		cout<<"count "<<count<<endl;
+//		cout<<"count "<<count<<endl;
 		for(int x=x1; x<=x2-1; x++){
 			mapCopy[x][y1] = 0; //dunno what this should be (0?)
 			addScore(points); //add points for each broken tile
@@ -288,7 +289,7 @@ void GameEngine::breakHorizontal(int x1, int y1, int points){
 		for(int y=y1; y<=y2-1; y++){
 			mapCopy[x1][y] = 0; //dunno what this should be (0?)
 			addScore(points);//add points for each broken tile
-			cout<<"added "<<points<<endl;
+//			cout<<"added "<<points<<endl;
 		}
 	}
 	if(y2<8 && x1<=9){ //if there is still room, horizontally and vertically
@@ -350,9 +351,25 @@ void GameEngine::updateZeros(){
 				mapCopy[x][y]=mapCopy[x2-1][y];
 				mapCopy[x2-1][y]=0;
 				x2--;
+					}
+					}
+				}
+}
+
+void GameEngine::replaceZeros(){
+	for(int x=9; x>-1;x--){
+			for(int y=9;y>-1;y--){
+				if(mapCopy[x][y]==0){
+					int x2 = x;
+					while(x2>-1){
+						int x3 = (x2-x)+9;
+//						cout<<x3<<endl;
+						mapCopy[x2][y]=fmap[x3][y];
+						x2--;
+					}
+				}
 			}
-		}
-	}
+}
 }
 
 int GameEngine::getScore(){
@@ -379,10 +396,10 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 		if(isLegalMove(x1, y1, x2, y2)){
 			int points=1;
 			makeMove(x1, y1, x2, y2);
-			printMap();
+//			printMap();
 			cout<<endl;
 			while(needsUpdate()){
-				cout<<"I need an update"<<endl;
+//				cout<<"I need an update"<<endl;
 				updateMap(points);
 				restoreMap();
 				printMap();
@@ -403,8 +420,6 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 }
 /* TO DO:
  * -updateMap()
- *  	-tiles falling down from the future map
- *  	-scorekeeping
- *  	-if no legal moves anymore-->then break
+ *  	-updating future map?
  */
 #endif /* GAMEENGINE_H_ */
