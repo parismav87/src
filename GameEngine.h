@@ -11,12 +11,11 @@ private:
     string futurePath;
 public:
     GameEngine(string mapPath, string futurePath);
-    void readMap(string mapPath);
+    void readMap(string path, int *arr);
     void printMap();
     void printMapCopy();
-    void readFuture(string futurePath);
 
-    void makeMove(int x1, int y1, int x2, int y2);
+    void makeMove(int* arr);
     bool isLegalMove(int x1, int y1, int x2, int y2);
     bool isAdjecent(int x1, int y1, int x2, int y2);
     bool isVerticalLegal(int x1, int y1, int x2, int y2);
@@ -25,14 +24,14 @@ public:
     bool isSameColumn(int y1, int y2);
     bool hasLegalMoves();
     void gameLoop();
+
     void updateMap(int count);
-    //void breakThree();
     bool needsUpdate();
     void breakStuff(int x, int y, int points);
     void breakHorizontal(int x, int y, int points);
     void breakVertical(int x, int y, int points);
     void restoreMap();
-    void updateZeros();
+    void updateZeros(int *arr);
     void replaceZeros();
     int getScore();
     void addScore(int points);
@@ -45,7 +44,10 @@ public:
 GameEngine::GameEngine(string mapPath, string futurePath){
     this->mapPath = mapPath;
     this->futurePath = futurePath;
-    readMap(mapPath);
+    readMap(mapPath, *map);
+    readMap(futurePath, *fmap);
+    printMap();
+    gameLoop();
 }
 
 
@@ -55,10 +57,9 @@ void GameEngine::printScore(){
 	cout<<endl;
 }
 
-void GameEngine::readMap(string mapPath){
-    ifstream mapFile(mapPath);
+void GameEngine::readMap(string path, int *arr){
+    ifstream mapFile(path);
     int counter = 0;
-    int i=0;
     int j=0;
     if(mapFile){
         cout<<"map loaded"<<endl;
@@ -68,49 +69,16 @@ void GameEngine::readMap(string mapPath){
         string line;
         getline(mapFile, line);
 
-        j=0; //j resets to 0 after each line
         for(char c: line){ //for each char in string
             if(c!=','){
-                map[i][j] = atoi(&c); //char into int
+                *(arr+j)= atoi(&c); //char into int
                 j++;
             }
         }
-        i++; //next line
-
-        counter++;
-    }
-
-    readFuture(futurePath);
-    printMap();
-    gameLoop();
-
-}
-
-void GameEngine::readFuture(string futurePath){
-    ifstream mapFile(mapPath);
-    int counter = 0;
-    int i=0;
-    int j=0;
-    if(mapFile){
-        cout<<"map future loaded"<<endl;
-    }
-
-    while(mapFile){
-        string line;
-        getline(mapFile, line);
-
-        j=0; //j resets to 0 after each line
-        for(char c: line){ //for each char in string
-            if(c!=','){
-                fmap[i][j] = atoi(&c); //char into int
-                j++;
-            }
-        }
-        i++; //next line
-
         counter++;
     }
 }
+
 
 void GameEngine::printMap(){
     int height = sizeof (map) / sizeof (*map);
@@ -161,7 +129,12 @@ bool GameEngine::needsUpdate(){
 
 
 //makeMove changes two elements on the grid
-void GameEngine::makeMove(int x1, int y1, int x2, int y2){
+void GameEngine::makeMove(int* arr){
+	int x1= arr[0];
+	int y1= arr[1];
+	int x2= arr[2];
+	int y2= arr[3];
+
 	swap(map[x1][y1],map[x2][y2]);
 }
 
@@ -186,17 +159,14 @@ if (!((x1 == x2 && abs(y1-y2) == 1) || (y1 == y2 && abs(x1-x2) == 1))){
 bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
 	if(((map[x2][y2]==map[x1][y1-2]) && (map[x2][y2]==map[x1][y1-1]) && y1>1 && y2>=y1)
 			|| ((map[x1][y1]==map[x2][y2-2]) && (map[x1][y1]==map[x2][y2-1]) && y2>1 && y1>=y2)){
-		//cout<<"1"<<endl;
 		return true;
 	}
 	else if(((map[x2][y2]==map[x1][y1+2]) && (map[x2][y2]==map[x1][y1+1]) && y1<8 && y1>=y2)
 			|| ((map[x1][y1]==map[x2][y2+2]) && (map[x1][y1]==map[x2][y2+1]) && y2<8 && y2>=y1)){
-		//cout<<"2"<<endl;
 		return true;
 	}
 	else if(x1!=x2 && (((map[x2][y2]==map[x1][y1-1]) && (map[x2][y2]==map[x1][y1+1]) && (y1>0 && y1<9))
 			|| ((map[x1][y1]==map[x2][y2-1]) && (map[x1][y1]==map[x2][y2+1]) && (y2>0 && y2<9)))){
-		//cout<<"3"<<endl;
 		return true;
 	}
 	return false;
@@ -205,19 +175,16 @@ bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check befor
 bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
 	if(((map[x2][y2]==map[x1-2][y1]) && (map[x2][y2]==map[x1-1][y1]) && x1>1 && x2>=x1)
 			|| ((map[x1][y1]==map[x2-2][y2]) && (map[x1][y1]==map[x2-1][y2]) && x2>1 && x1>=x2)){
-		//cout<<"4"<<endl;
 		return true;
 	}
 
 	else if(((map[x2][y2]==map[x1+2][y1]) && (map[x2][y2]==map[x1+1][y1]) && x1<8 && x1>=x2)
 			|| ((map[x1][y1]==map[x2+2][y2]) && (map[x1][y1]==map[x2+1][y2]) && x2<8 && x2>=x1)){
-		//cout<<"5"<<endl;
 		return true;
 	}
 
 	else if(y1!=y2 &&  (((map[x2][y2]==map[x1-1][y1]) && (map[x2][y2]==map[x1+1][y1]) && (x1>0 && x1<9))
 			|| ((map[x1][y1]==map[x2-1][y2]) && (map[x1][y1]==map[x2+1][y2]) && (x2>0 && x2<9)))){
-		//cout<<"6"<<endl;
 		return true;
 	}
 	return false;
@@ -243,8 +210,9 @@ void GameEngine::updateMap(int count){
 		}
 	}
 	breakStuff(0, 0, count);
-	updateZeros();
+	updateZeros(*mapCopy);
 	replaceZeros();
+	updateZeros(*fmap);
 	//update the score
 	//score += numberOfTiles*count
 
@@ -313,28 +281,7 @@ void GameEngine::breakStuff(int x, int y, int points){
 }
 
 
-/*void GameEngine::breakThree(){
-	for(int x=0; x<10; x++){
-			for(int y=0; y<10; y++){
-					if(map[x][y]==map[x][y+1] && map[x][y]==map[x][y+2] && y<8){
-						while(x>0){
-							map[x][y]=map[x-1][y];
-							map[x][y+1]=map[x-1][y+1];
-							map[x][y+2]=map[x-1][y+2];
-							x--;
-						}
-						}
-					if(map[x][y]==map[x+1][y] && map[x][y]==map[x+2][y] && x<8){
-						while(x>2){
-							map[x][y]=map[x-3][y];
-							map[x+1][y]=map[x-2][y];
-							map[x+2][y]=map[x-1][y];
-							x--;
-						}
-				}
-	}
-}
-}*/
+
 void GameEngine::restoreMap(){
 	 for(int i=0; i<10; i++){ //ideally this would be mapsize something somwething
 	        for(int j=0; j<10; j++){
@@ -343,18 +290,55 @@ void GameEngine::restoreMap(){
 	 }
 }
 
-void GameEngine::updateZeros(){
-	for(int x=9; x>0;x--){
-		for(int y=9;y>-1;y--){
-			int x2 = x;
-			while(mapCopy[x][y]==0 && x2>0){
-				mapCopy[x][y]=mapCopy[x2-1][y];
-				mapCopy[x2-1][y]=0;
-				x2--;
-					}
-					}
+//void GameEngine::updateZeros(int *arr){
+//	int i = 99;
+//	while(i>-1){
+//		int x2 = i;
+//		while(*(arr+i)==0 && x2>9){
+//			*(arr+i)=*(arr+i-10);
+//			*(arr+i-10)=0;
+//			x2-=10;
+//		}
+//	i-=1;
+//}
+//}
+
+void GameEngine::updateZeros(int *arr){
+	int arrClone[10][10];
+	for(int i=0; i<100; i++){
+		arrClone[i/10][i%10] = arr[i];
+	}
+	for(int j=0; j<10; j++){
+		int countZeros =0;
+		for(int i=9; i>=0; i--){
+			if(arrClone[i][j]==0){
+				countZeros+=1;
+			} else {
+				if(countZeros>0){
+					arrClone[i+countZeros][j] = arrClone[i][j];
+					arrClone[i][j] = 0;
 				}
+			}
+		}
+	}
+
+
+	for(int x=0;x<10;x++){
+		for(int y=0;y<10;y++){
+			arr[x*10+y]=arrClone[x][y];
+		}
+	}
+//	for(int i=0;i<100;i++){
+//		cout<<*(arr+i)<<",";
+//		if(i%10==9){
+//			cout<<endl;
+//		}
+//	}
+
 }
+
+
+
 
 void GameEngine::replaceZeros(){
 	for(int x=9; x>-1;x--){
@@ -364,9 +348,12 @@ void GameEngine::replaceZeros(){
 					while(x2>-1){
 						int x3 = (x2-x)+9;
 //						cout<<x3<<endl;
-						mapCopy[x2][y]=fmap[x3][y];
+						swap(mapCopy[x2][y], fmap[x3][y]);
+//						mapCopy[x2][y]=fmap[x3][y];
+						//fmap[x][y]=0;
 						x2--;
 					}
+
 				}
 			}
 }
@@ -395,11 +382,10 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 		cin>>y2;
 		if(isLegalMove(x1, y1, x2, y2)){
 			int points=1;
-			makeMove(x1, y1, x2, y2);
-//			printMap();
+			int arr[4] = {x1, y1, x2, y2};
+			makeMove(arr);
 			cout<<endl;
 			while(needsUpdate()){
-//				cout<<"I need an update"<<endl;
 				updateMap(points);
 				restoreMap();
 				printMap();
@@ -407,8 +393,6 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 
 				points+=1;
 			}
-			//breakThree();
-//			cout<<points<<endl;
 		}
 		else{
 			cout<<"Invalid move, try again"<<endl;
@@ -418,8 +402,5 @@ void GameEngine::gameLoop(){//ask the user for input (x and y have to be a numbe
 	cout<<"The game has ended"<<endl;
 	cout<<getScore()<<endl;
 }
-/* TO DO:
- * -updateMap()
- *  	-updating future map?
- */
+
 #endif /* GAMEENGINE_H_ */
