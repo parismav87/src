@@ -12,6 +12,7 @@ private:
 public:
     GameEngine(string mapPath, string futurePath);
     void readMap(string path, int *arr);
+    int* getMap();
     void printMap();
     void printMapCopy();
 
@@ -79,6 +80,9 @@ void GameEngine::readMap(string path, int *arr){
     }
 }
 
+int* GameEngine::getMap(){
+	return *map;
+}
 
 void GameEngine::printMap(){
     int height = sizeof (map) / sizeof (*map);
@@ -369,7 +373,8 @@ void GameEngine::addScore(int points){
 
 void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
 	int x1, y1, x2, y2;
-
+//	int* r = getMap();
+//	cout<<r[10]<<endl;
 	while(hasLegalMoves()){
 		cout<<"Give the x-coordinate of the first tile"<<endl;
 		cin>>x1;
