@@ -14,9 +14,11 @@ using namespace std;
 
 int main()
 {
-	Bot player;
+	string PATH_TO_MAP = "C:\\Users\\Willeke\\Desktop\\map5.txt";
+	string PATH_TO_FUTURE_MAP = "C:\\Users\\Willeke\\Desktop\\future5.txt";
 
-	GameEngine game("C:\\Users\\Willeke\\Desktop\\map5.txt", "C:\\Users\\Willeke\\Desktop\\future5.txt", player);
+	HumanPlayer player;
+	GameEngine engine(PATH_TO_MAP, PATH_TO_FUTURE_MAP, player);
 
 	system("pause");
 	return 0;

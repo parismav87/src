@@ -26,7 +26,7 @@ static void ReadLines(vector<Column>& columns, istream& stream)
 }
 
 GameEngine::GameEngine(string tileMapPath, string futureTileMapPath, Player& player)
-		  : myPlayer(player) //directly assigns the value (must be done for a reference), instead of doing that during the code of the contructor (avoids making two copies)
+		  : myPlayer(player) //directly assigns the value (must be done for a reference), instead of doing that during the code of the constructor (avoids making two copies)
 {
 	fstream stream(futureTileMapPath);
 
@@ -247,7 +247,26 @@ int GameEngine::resolveMatches()
 
 	swap(map, result.map); //if all matches have been resolved, make the copy of the map, the real map
 
+	numberOfTilesThatMatch(); //function that counts how many tiles need to be broken/match
+
 	return numMatches;
+}
+
+int GameEngine::numberOfTilesThatMatch() 
+{
+	int numberOfMatchingTiles = 0;
+	for (int col = 0; col < mySize; ++col)
+	{
+		for (int row = 0; row < mySize; ++row)
+		{
+			if (map[col][row] == 0)
+			{
+				numberOfMatchingTiles += 1;
+			}
+		}
+	}
+
+	return numberOfMatchingTiles;
 }
 
 void GameEngine::dropTiles()
@@ -276,16 +295,6 @@ int GameEngine::size() const
 int GameEngine::score() const
 {
 	return myScore;
-}
-
-int GameEngine::calculateNewScore(int matches)
-{
-	int addScore = 0;
-	for (int i = 1; i <= matches; i++)
-	{
-		addScore += i;
-	}
-	return addScore;
 }
 
 bool GameEngine::movesLeft()
@@ -332,6 +341,16 @@ bool GameEngine::movesLeft()
 	}
 }
 
+int GameEngine::calculateNewScore(int matches)
+{
+	int addScore = 0;
+	for (int i = 1; i <= matches; i++)
+	{
+		addScore += i;
+	}
+	return addScore;
+}
+
 void GameEngine::gameLoop()
 {
 	myScore = 0;
@@ -366,7 +385,9 @@ void GameEngine::gameLoop()
 		makeMove(move);
 
 		int matches = resolveMatches();
-		int totalMatches = 0;
+		//int totalMatches = 0;
+		int newMatchesWithoutInput = 1;
+		int numberOfTilesMatching = 0;
 		while (matches > 0)
 		{
 			system("cls");
@@ -379,16 +400,19 @@ void GameEngine::gameLoop()
 				cout << "You made " << matches << " matches!" << endl;
 			}
 			cout << "Matches made: " << endl;
+			numberOfTilesMatching = numberOfTilesThatMatch();
+			myScore += numberOfTilesMatching * newMatchesWithoutInput;
+			newMatchesWithoutInput += 1;
 			printBoard();
 			dropTiles();
 			cout << "New tiles have dropped in, making the new board:" << endl;
 			printBoard();
 			system("pause");
 			system("cls");
-			totalMatches += matches;
+			//totalMatches += matches;
 			matches = resolveMatches();
 		}
-		myScore += calculateNewScore(totalMatches);
+		//myScore += calculateNewScore(totalMatches);
 		gameIsRunning = movesLeft();
 		cout << "Your score is: " << myScore << endl;
 

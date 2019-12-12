@@ -50,6 +50,8 @@ public:
 
 	bool isPossibleMove(const Move& move);
 
+	int numberOfTilesThatMatch();
+
 private:
 	int mySize;
 	vector<Column> map;
