@@ -3,19 +3,18 @@
 
 class GameEngine{
 private:
-    int map[10][10];
-    int fmap[10][10];
-    int mapCopy[10][10];
-    int totalScore=0;
-    string mapPath;
-    string futurePath;
+    int map[10][10]; //map of game tiles
+    int fmap[10][10]; //map of future tiles
+    int mapCopy[10][10]; //clone of map, necessary for calculations
+    int totalScore=0; //total game score
+    string mapPath; //directory of map file
+    string futurePath; //directory of future map file
 public:
     GameEngine(string mapPath, string futurePath);
     void readMap(string path, int *arr);
     int* getMap();
     void printMap();
     void printMapCopy();
-
     void makeMove(int* arr);
     bool isLegalMove(int x1, int y1, int x2, int y2);
     bool isAdjecent(int x1, int y1, int x2, int y2);
@@ -24,8 +23,6 @@ public:
     bool isSameRow(int x1, int x2);
     bool isSameColumn(int y1, int y2);
     bool hasLegalMoves();
-    void gameLoop();
-
     void updateMap(int count);
     bool needsUpdate();
     void breakStuff(int x, int y, int points);
@@ -41,23 +38,24 @@ public:
 };
 
 
-
+//constructor for game engine class. Reads the maps and assigns them to variables.
 GameEngine::GameEngine(string mapPath, string futurePath){
     this->mapPath = mapPath;
     this->futurePath = futurePath;
     readMap(mapPath, *map);
     readMap(futurePath, *fmap);
     printMap();
-    gameLoop();
 }
 
-
+//print score in terminal
 void GameEngine::printScore(){
 	cout<< "------------"<< endl;
 	cout<<"Total Score: "<<getScore()<<endl;
 	cout<<endl;
 }
 
+
+//open and read map file and assign it into an array
 void GameEngine::readMap(string path, int *arr){
     ifstream mapFile(path);
     int counter = 0;
@@ -80,16 +78,17 @@ void GameEngine::readMap(string path, int *arr){
     }
 }
 
+//return map variable
 int* GameEngine::getMap(){
 	return *map;
 }
 
+//print map in readable format in terminal
 void GameEngine::printMap(){
     int height = sizeof (map) / sizeof (*map);
     int width = sizeof (*map) / sizeof (int);
-    //cout << height << width << endl;
 
-    for(int i=0; i<height; i++){ //ideally this would be mapsize something somwething
+    for(int i=0; i<height; i++){
         for(int j=0; j<width; j++){
             if(j != 9){
                 cout << map[i][j] << " ";
@@ -102,12 +101,13 @@ void GameEngine::printMap(){
     cout<<endl;
 }
 
+
+//print the map clone in terminal.
 void GameEngine::printMapCopy(){
     int height = sizeof (map) / sizeof (*map);
     int width = sizeof (*map) / sizeof (int);
-    //cout << height << width << endl;
 
-    for(int i=0; i<height; i++){ //ideally this would be mapsize something somwething
+    for(int i=0; i<height; i++){
         for(int j=0; j<width; j++){
             if(j != 9){
                 cout << mapCopy[i][j] << " ";
@@ -119,6 +119,8 @@ void GameEngine::printMapCopy(){
     }
 }
 
+
+//for each tile, check if is forming a triad (vertical or horizontal). If yes, this should be resolved.
 bool GameEngine::needsUpdate(){
 	for(int x=0; x<10; x++){
 		for(int y=0; y<10; y++){
@@ -127,12 +129,11 @@ bool GameEngine::needsUpdate(){
 			}
 		}
 	}
-//	cout<<"I don't need update"<<endl;
 	return false;
 }
 
 
-//makeMove changes two elements on the grid
+//makeMove swaps two elements on the grid
 void GameEngine::makeMove(int* arr){
 	int x1= arr[0];
 	int y1= arr[1];
@@ -143,8 +144,9 @@ void GameEngine::makeMove(int* arr){
 }
 
 
+
+//check whether a move is legal (it is legal if it results in a triad, vertical or horizontal)
 bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
-//	cout<<map[x1][y1]<<"  "<<map[x2][y2]<<endl;
 	if((isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)) && (map[x1][y1]!=0 || map[x2][y2]!=0)){
 			if (isAdjecent(x1,y1, x2, y2)){
 		return true;
@@ -154,13 +156,16 @@ bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
 	return false;
 }
 
+
+//check if two tiles are next to each other (engine doesn't allow swap between non-adjacent tiles)
 bool GameEngine::isAdjecent(int x1, int y1, int x2, int y2){
 if (!((x1 == x2 && abs(y1-y2) == 1) || (y1 == y2 && abs(x1-x2) == 1))){
-	//std::cout << "Non-Adjecent move, try again" << std::endl;
 	return false;}
 	else return true;}
 
-bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
+
+//check if a move is legal vertically (makes a vertical triad)
+bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){
 	if(((map[x2][y2]==map[x1][y1-2]) && (map[x2][y2]==map[x1][y1-1]) && y1>1 && y2>=y1)
 			|| ((map[x1][y1]==map[x2][y2-2]) && (map[x1][y1]==map[x2][y2-1]) && y2>1 && y1>=y2)){
 		return true;
@@ -176,6 +181,8 @@ bool GameEngine::isVerticalLegal(int x1, int y1, int x2, int y2){ // check befor
 	return false;
 }
 
+
+//check if a move is legal horizontally (makes a horizontal triad)
 bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check before swap is made
 	if(((map[x2][y2]==map[x1-2][y1]) && (map[x2][y2]==map[x1-1][y1]) && x1>1 && x2>=x1)
 			|| ((map[x1][y1]==map[x2-2][y2]) && (map[x1][y1]==map[x2-1][y2]) && x2>1 && x1>=x2)){
@@ -194,11 +201,11 @@ bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check bef
 	return false;
 }
 
+//check if the current map state has any legal moves (moves that would lead to triads, horizontal or vertical)
 bool GameEngine::hasLegalMoves(){
 	for(int x=0; x<9; x++){
 		for(int y=0; y<9; y++){
 			if(isLegalMove(x, y, x+1, y) || isLegalMove(x, y, x, y+1)){
-				//cout<<"found legal move"<<x1<<y1<<endl;
 				return true;
 			}
 		}
@@ -207,6 +214,8 @@ bool GameEngine::hasLegalMoves(){
 	return false;
 }
 
+
+//update the map after a move is made
 void GameEngine::updateMap(int count){
 	for(int x=0; x<10; x++){
 		for(int y=0; y<10; y++){
@@ -217,12 +226,12 @@ void GameEngine::updateMap(int count){
 	updateZeros(*mapCopy);
 	replaceZeros();
 	updateZeros(*fmap);
-	//update the score
-	//score += numberOfTiles*count
 
 
 }
 
+
+//break tiles in columns
 void GameEngine::breakVertical(int x1, int y1, int points){
 	int x2=x1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
 	while(map[x2][y1]!=0 && map[x2][y1] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
@@ -234,9 +243,8 @@ void GameEngine::breakVertical(int x1, int y1, int points){
 		count+=1; //increase number of tiles that are equal
 	}
 	if(count>=3){ //if it found 3 or more matching tiles in a row
-//		cout<<"count "<<count<<endl;
 		for(int x=x1; x<=x2-1; x++){
-			mapCopy[x][y1] = 0; //dunno what this should be (0?)
+			mapCopy[x][y1] = 0; //broken tiles are replaced with zeros
 			addScore(points); //add points for each broken tile
 		}
 	}
@@ -247,6 +255,7 @@ void GameEngine::breakVertical(int x1, int y1, int points){
 	}
 }
 
+//break tiles in rows
 void GameEngine::breakHorizontal(int x1, int y1, int points){
 	int y2=y1+1, count=1; //y2 is always equal to y1 (because we're looking vertically). count=1 because we have at least 1 tile. x2 starts as x1+1
 	while(map[x1][y2]!=0 && map[x1][y2] == map[x1][y1]){ //while tiles are equal to (x1 y1) starting from the one next to it (x2 y1).
@@ -271,42 +280,24 @@ void GameEngine::breakHorizontal(int x1, int y1, int points){
 	}
 }
 
-
+//break tiles that form triads (or longer sets)
 void GameEngine::breakStuff(int x, int y, int points){
 	breakHorizontal(x, y, points);
 	//nothing should happen in between here. breaks happen "simultaneously" (in the same game loop iteration)
 	breakVertical(x, y, points);
-//	printMap();
-//	cout<<endl;
-	//i'm not sure how to handle this, so i did horizontal first and then vertical.
-	//if after 1 move there is more than one groups of tiles to be broken, they should happen in the same iteration of gameloop...
-
-	//at this point in the code, we have a map with a bunch of zeros. we should update those.
 }
 
 
-
+//copy map clone into original map
 void GameEngine::restoreMap(){
-	 for(int i=0; i<10; i++){ //ideally this would be mapsize something somwething
+	 for(int i=0; i<10; i++){
 	        for(int j=0; j<10; j++){
 	        	map[i][j]=mapCopy[i][j];
 	        }
 	 }
 }
 
-//void GameEngine::updateZeros(int *arr){
-//	int i = 99;
-//	while(i>-1){
-//		int x2 = i;
-//		while(*(arr+i)==0 && x2>9){
-//			*(arr+i)=*(arr+i-10);
-//			*(arr+i-10)=0;
-//			x2-=10;
-//		}
-//	i-=1;
-//}
-//}
-
+//put zeros in 'broken' tiles' places
 void GameEngine::updateZeros(int *arr){
 	int arrClone[10][10];
 	for(int i=0; i<100; i++){
@@ -332,18 +323,12 @@ void GameEngine::updateZeros(int *arr){
 			arr[x*10+y]=arrClone[x][y];
 		}
 	}
-//	for(int i=0;i<100;i++){
-//		cout<<*(arr+i)<<",";
-//		if(i%10==9){
-//			cout<<endl;
-//		}
-//	}
 
 }
 
 
 
-
+//replace broken tiles with new ones
 void GameEngine::replaceZeros(){
 	for(int x=9; x>-1;x--){
 			for(int y=9;y>-1;y--){
@@ -351,61 +336,26 @@ void GameEngine::replaceZeros(){
 					int x2 = x;
 					while(x2>-1){
 						int x3 = (x2-x)+9;
-//						cout<<x3<<endl;
 						swap(mapCopy[x2][y], fmap[x3][y]);
-//						mapCopy[x2][y]=fmap[x3][y];
-						//fmap[x][y]=0;
 						x2--;
 					}
 
 				}
 			}
-}
+	}
 }
 
+
+//return score
 int GameEngine::getScore(){
 	return totalScore;
 }
 
+
+//add points to score
 void GameEngine::addScore(int points){
 	totalScore+=points;
 }
 
-void GameEngine::gameLoop(){//ask the user for input (x and y have to be a number from 0 to 9)
-	int x1, y1, x2, y2;
-//	int* r = getMap();
-//	cout<<r[10]<<endl;
-	while(hasLegalMoves()){
-		cout<<"Give the x-coordinate of the first tile"<<endl;
-		cin>>x1;
-		cout<<"Give the y-coordinate of the first tile"<<endl;
-		cin>>y1;
-
-		cout<<"Give the x-coordinate of the second tile"<<endl;
-		cin>>x2;
-		cout<<"Give the y-coordinate of the second tile"<<endl;
-		cin>>y2;
-		if(isLegalMove(x1, y1, x2, y2)){
-			int points=1;
-			int arr[4] = {x1, y1, x2, y2};
-			makeMove(arr);
-			cout<<endl;
-			while(needsUpdate()){
-				updateMap(points);
-				restoreMap();
-				printMap();
-				printScore();
-
-				points+=1;
-			}
-		}
-		else{
-			cout<<"Invalid move, try again"<<endl;
-		}
-
-	}
-	cout<<"The game has ended"<<endl;
-	cout<<getScore()<<endl;
-}
 
 #endif /* GAMEENGINE_H_ */
