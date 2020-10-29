@@ -14,8 +14,9 @@ int main()
 
 
 	while(engine.hasLegalMoves()){ //while the game isn't over
-
-		int *nextMove; // this is where the next move will be stored: [x1,y1,x2,y2]
+		
+		int nextMoveInt;
+		int *nextMove = &nextMoveInt; // this is where the next move will be stored: [x1,y1,x2,y2]
 
 		if(smart){ //bot player
 
