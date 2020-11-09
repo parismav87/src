@@ -23,10 +23,14 @@ int main()
 			nextMove = myBot.getNextMove(engine.getMap(), nextMove); //get next move from bot.
 
 			//assign coordinates of next move
-			x1 = nextMove[0];
-			y1 = nextMove[1];
-			x2 = nextMove[2];
-			y2 = nextMove[3];
+			int tempx1 = nextMove[0];
+			int tempy1 = nextMove[1];
+			int tempx2 = nextMove[2];
+			int tempy2 = nextMove[3];
+			x1 = tempx1;
+			y1 = tempy1;
+			x2 = tempx2;
+			y2 = tempy2;
 
 		} else { //human player
 
