@@ -13,7 +13,6 @@ int main()
 
 
 	while(engine.hasLegalMoves()){ //while the game isn't over
-		
 		int x1, y1, x2, y2; //coordinates for next move. x1 y1 = tile 1 , x2 y2 = tile 2
 		int nextMoveInt;
 		int *nextMove = &nextMoveInt; // this is where the next move will be stored: [x1,y1,x2,y2]
@@ -76,7 +75,7 @@ int main()
 
 	//the end
 	cout<<"The game has ended"<<endl;
-	cout<<engine.getScore()<<endl;
+	cout<<"Final Score: "<<engine.getScore()<<endl;
 
 
 

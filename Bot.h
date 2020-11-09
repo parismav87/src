@@ -13,6 +13,7 @@ class Bot
 		bool isLegalH(int x1, int y1, int x2, int y2);
 		bool isLegalV(int x1, int y1, int x2, int y2);
 		void fillMap(int map[]);
+		void printMap();
 };
 
 Bot::Bot() //initialise Bot class - constructor
@@ -27,7 +28,7 @@ void Bot::fillMap(int map[]){
 }
 
 bool Bot::isLegalMove(int x1, int y1, int x2, int y2){
-	if(isLegalH(x1,y1,x2,y2) || isLegalV(x1,y1,x2,y2)){
+	if((isLegalH(x1,y1,x2,y2) || isLegalV(x1,y1,x2,y2)) && ownMap[x1][y1]!=0 && ownMap[x2][y2]!=0){
 		return true;
 	}
 	return false;
@@ -47,8 +48,8 @@ bool Bot::isLegalH(int x1, int y1, int x2, int y2){
 }
 
 bool Bot::isLegalV(int x1, int y1, int x2, int y2){
-	if((x1>=x2 && x1>1 && ownMap[x2][y2]==ownMap[x1-2][y1] && ownMap[x2][y2]==ownMap[x1-1][y1])
-			|| (x2>=x1 && x2>1 && ownMap[x1][y1]==ownMap[x2-2][y2] && ownMap[x1][y1]==ownMap[x2-1][y2])
+	if((x2>=x1 && x1>1 && ownMap[x2][y2]==ownMap[x1-2][y1] && ownMap[x2][y2]==ownMap[x1-1][y1])
+			|| (x1>=x2 && x2>1 && ownMap[x1][y1]==ownMap[x2-2][y2] && ownMap[x1][y1]==ownMap[x2-1][y2])
 			|| (x1>=x2 && x1<8 && ownMap[x2][y2]==ownMap[x1+2][y1] && ownMap[x2][y2]==ownMap[x1+1][y1])
 			|| (x2>=x1 && x2<8 && ownMap[x1][y1]==ownMap[x2+2][y2] && ownMap[x1][y1]==ownMap[x2+1][y2])
 			|| (y1!=y2 && x1>0 && x1<9 && ownMap[x2][y2]==ownMap[x1-1][y1] && ownMap[x2][y2]==ownMap[x1+1][y1])
@@ -87,7 +88,19 @@ int* Bot::getNextMove(int map[], int nextMove[]) //decide and return next move, 
 	return nextMove;
 }
 
-
+void Bot::printMap(){
+	for(int i=0; i<10; i++){
+		for(int j=0; j<10; j++){
+			if(j != 9){
+				cout << ownMap[i][j] << " ";
+			} else {
+				cout << ownMap[i][j];
+			}
+		}
+		cout << endl;
+	}
+	cout<<endl;
+}
 
 
 

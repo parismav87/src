@@ -147,7 +147,7 @@ void GameEngine::makeMove(int* arr){
 
 //check whether a move is legal (it is legal if it results in a triad, vertical or horizontal)
 bool GameEngine::isLegalMove(int x1, int y1, int x2, int y2){
-	if((isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)) && (map[x1][y1]!=0 || map[x2][y2]!=0)){
+	if((isVerticalLegal(x1, y1, x2, y2) || isHorizontalLegal(x1, y1, x2, y2)) && map[x1][y1]!=0 && map[x2][y2]!=0){
 			if (isAdjecent(x1,y1, x2, y2)){
 		return true;
 		}
