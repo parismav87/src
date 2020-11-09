@@ -203,9 +203,9 @@ bool GameEngine::isHorizontalLegal(int x1, int y1, int x2, int y2){ // check bef
 
 //check if the current map state has any legal moves (moves that would lead to triads, horizontal or vertical)
 bool GameEngine::hasLegalMoves(){
-	for(int x=0; x<9; x++){
-		for(int y=0; y<9; y++){
-			if(isLegalMove(x, y, x+1, y) || isLegalMove(x, y, x, y+1)){
+	for(int x=0; x<10; x++){
+		for(int y=0; y<10; y++){
+			if((x!=9 && isLegalMove(x, y, x+1, y)) || (y!=9 && isLegalMove(x, y, x, y+1))){
 				return true;
 			}
 		}
