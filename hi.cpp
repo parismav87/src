@@ -9,7 +9,7 @@ int main()
 	GameEngine engine("C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\map10.txt", "C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\future10.txt"); //init game engine with map & future map.
 	Bot myBot; //init Bot
 
-	bool smart = true; //false = human, true = bot
+	bool smart = false; //false = human, true = bot
 
 
 	while(engine.hasLegalMoves()){ //while the game isn't over
@@ -44,10 +44,14 @@ int main()
 			cout<<"Give the y-coordinate of the second tile"<<endl;
 			cin>>y2;
 
-			nextMove[0] = x1;
-			nextMove[1] = y1;
-			nextMove[2] = x2;
-			nextMove[3] = y2;
+			int tempx1 = x1;
+			int tempy1 = y1;
+			int tempx2 = x2;
+			int tempy2 = y2;
+			nextMove[0] = tempx1;
+			nextMove[1] = tempy1;
+			nextMove[2] = tempx2;
+			nextMove[3] = tempy2;
 
 		}
 
