@@ -1,3 +1,4 @@
+#define __USE_MINGW_ANSI_STDIO 0
 #include "lib_std_facilities.h"
 #include <fstream>
 #include "GameEngine.h"
@@ -9,7 +10,7 @@ int main()
 	GameEngine engine("C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\map10.txt", "C:\\Users\\itsupport\\eclipse-workspace\\hi\\src\\future10.txt"); //init game engine with map & future map.
 	Bot myBot; //init Bot
 
-	bool smart = false; //false = human, true = bot
+	bool smart = true; //false = human, true = bot
 
 
 	while(engine.hasLegalMoves()){ //while the game isn't over
