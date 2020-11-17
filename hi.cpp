@@ -1,4 +1,3 @@
-#define __USE_MINGW_ANSI_STDIO 0
 #include "lib_std_facilities.h"
 #include <fstream>
 #include "GameEngine.h"
