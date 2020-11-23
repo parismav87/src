@@ -10,6 +10,7 @@ class Bot
 		int ownMap[10][10];
 		int mapCopy[10][10];
 		vector<Move> possibleMoves;
+		bool greedy = false;
 	public:
 		Bot();
 		int* getNextMove(int map[], int nextMove[]);
@@ -19,10 +20,14 @@ class Bot
 		void fillMap(int map[]);
 		void findPossibleMoves(int bestMove[]);
 		int calculateScore(int x1, int y1, int x2, int y2);
+		int calculateType();
 		int findSets();
+		void findTileTypes(int types[]);
 		void findBestMove(int bestMove[]);
+		void findBestMove2(int bestMove[]);
 		void printMap();
 		void printMapCopy();
+		bool moveExists(int type);
 };
 
 Bot::Bot() //initialise Bot class - constructor
@@ -42,18 +47,46 @@ void Bot::findPossibleMoves(int bestMove[]){
 		for(int y=0; y<10; y++){
 			if(x!=9 && isLegalMove(x,y,x+1,y)){
 				int score = calculateScore(x,y,x+1,y);
-				Move m(x,y,x+1,y,score);
+				int type = calculateType();
+				Move m(x,y,x+1,y,score, type);
 				possibleMoves.push_back(m);
 			}
 			if(y!=9 && isLegalMove(x,y,x,y+1)){
 				int score = calculateScore(x,y,x,y+1);
-				Move m(x,y,x,y+1,score);
+				int type = calculateType();
+				Move m(x,y,x,y+1,score,type);
 				possibleMoves.push_back(m);
 			}
 		}
 	}
+	if(this->greedy){
+		findBestMove(bestMove);
+	} else {
+		findBestMove2(bestMove);
+	}
 
-	findBestMove(bestMove);
+}
+
+int Bot::calculateType(){
+	int type = 0;
+	for(int x=0; x<10; x++){
+		for(int y=0; y<8; y++){
+			if(mapCopy[x][y] == mapCopy[x][y+1] && mapCopy[x][y] == mapCopy[x][y+2]){
+				type = mapCopy[x][y];
+				return type;
+			}
+		}
+	}
+	for(int y=0; y<10; y++){
+		for(int x=0; x<8; x++){
+			if(mapCopy[x][y] == mapCopy[x+1][y] && mapCopy[x][y] == mapCopy[x+2][y]){
+				type = mapCopy[x][y];
+				return type;
+			}
+		}
+	}
+
+	return type;
 }
 
 void Bot::findBestMove(int bestMove[]){
@@ -67,6 +100,55 @@ void Bot::findBestMove(int bestMove[]){
 	cout<<"best move is: "<<bestMove[0]<<bestMove[1]<<bestMove[2]<<bestMove[3]<<" with a score of "<<max<<endl;
 }
 
+void Bot::findTileTypes(int types[]){
+	for(int x=0; x<10; x++){
+		for(int y=0; y<10; y++){
+			int tile = mapCopy[x][y];
+			types[tile-1]++;
+		}
+	}
+}
+
+
+
+void Bot::findBestMove2(int bestMove[]){
+	int types[] = {0,0,0,0};
+	findTileTypes(types);
+
+	int max = 0;
+	int maxType = 0;
+
+	for(int t=0 ; t<4; t++){
+		if(types[t]>max){
+			max = types[t];
+			maxType = t+1;
+		}
+	}
+
+	if(moveExists(maxType)){
+		for(int i=0; i<possibleMoves.size(); i++){
+			if(possibleMoves[i].getType() == maxType){
+				possibleMoves[i].getCoordinates(bestMove);
+			}
+		}
+	} else {
+		possibleMoves[0].getCoordinates(bestMove);
+	}
+}
+
+
+
+bool Bot::moveExists(int type){
+	bool found = false;
+	for(int i=0; i<possibleMoves.size(); i++){
+		if(possibleMoves[i].getType() == type){
+			found = true;
+		}
+	}
+	return found;
+}
+
+
 int Bot::calculateScore(int x1, int y1, int x2, int y2){
 	for(int x=0; x<10; x++){
 		for(int y=0; y<10; y++){
@@ -75,6 +157,7 @@ int Bot::calculateScore(int x1, int y1, int x2, int y2){
 	}
 	swap(mapCopy[x1][y1], mapCopy[x2][y2]);
 	int score = findSets();
+
 	return score;
 }
 
